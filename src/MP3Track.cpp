@@ -58,6 +58,6 @@ double MP3Track::get_quality_score() const {
 
 PointerWrapper<AudioTrack> MP3Track::clone() const {
     // TODO: Implement polymorphic cloning
-    MP3Track* temp = new MP3Track(*this);
+    AudioTrack* temp = new MP3Track(*this);
     return PointerWrapper<AudioTrack>(temp); // Replace with your implementation
 }
