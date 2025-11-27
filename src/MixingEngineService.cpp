@@ -9,8 +9,6 @@
 MixingEngineService::MixingEngineService()
     : decks(), active_deck(1), auto_sync(false), bpm_tolerance(0)
 {
-    decks[0] = nullptr;
-    decks[1] = nullptr;
     std::cout << "[MixingEngineService] Initialized with 2 empty decks.\n";
 }
 
@@ -25,6 +23,41 @@ MixingEngineService::~MixingEngineService() {
         decks[i] = nullptr;
         }
     }
+}
+
+MixingEngineService::MixingEngineService(const MixingEngineService& other)
+    :   decks(),
+        active_deck(other.active_deck),
+        auto_sync(other.auto_sync),
+        bpm_tolerance(other.bpm_tolerance)
+
+{
+    //new decks?
+    for (int i=0 ; i<=1 ; i++)
+        if(other.decks[i] != nullptr)
+            decks[i]=other.decks[i]->clone().release();
+}
+
+MixingEngineService& MixingEngineService::operator=(const MixingEngineService& other){
+    if(this != &other){
+        for (int i=0 ; i<=1 ; i++){
+        if(this->decks[i] != nullptr){
+            delete this->decks[i];
+            this->decks[i] = nullptr;
+            }
+        }
+
+        for (int i=0 ; i<=1 ; i++)
+            if(other.decks[i] != nullptr)
+                decks[i]=other.decks[i]->clone().release();
+            else
+                decks[i]=nullptr;
+        
+        active_deck = other.active_deck;
+        auto_sync = other.auto_sync;
+        bpm_tolerance = other.bpm_tolerance;
+    }
+    return *this;
 }
 
 
@@ -47,7 +80,8 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
             std::cout << "[ERROR] Track: " << track.get_title() <<" failed to clone\n";
             return -1;
         }
-        decks[0] = tr.release();
+        decks[target] = tr.release();
+        active_deck = target;
     }
 
     // Subsequent track load
@@ -93,8 +127,9 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
         }
 
         active_deck = target;
-        return active_deck;
+        std::cout << "[Active Deck] Switched to deck " << target << "\n";
     }
+    return target;
 }
 
 /**
