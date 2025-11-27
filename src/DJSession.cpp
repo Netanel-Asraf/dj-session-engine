@@ -72,7 +72,25 @@ bool DJSession::load_playlist(const std::string& playlist_name)  {
 
  */
 int DJSession::load_track_to_controller(const std::string& track_name) {
-    // Your implementation here
+    AudioTrack* track = library_service.findTrack(track_name);
+    if(!track){
+        std::cout << "[ERROR] Track: \"<" << track_name << ">\" not found in cache" << std::endl;
+        stats.errors++;
+    }
+    else{
+        std::cout << "[System] Loading track ’" << track_name << "’ to controller..." << std::endl;
+        int result = controller_service.loadTrackToCache(*track);
+        if(result == 1)
+            stats.cache_hits++;
+        else{
+            stats.cache_misses++;
+            if(result == -1)
+                stats.cache_evictions++;
+        }
+
+        // Cache result code
+        return result;
+    }
     return 0; // Placeholder
 }
 
@@ -84,7 +102,27 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
  */
 bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
     std::cout << "[System] Delegating track transfer to MixingEngineService for: " << track_title << std::endl;
-    // your implementation here
+    AudioTrack* track = controller_service.getTrackFromCache(track_title);
+    if(!track){
+        std::cout << "[ERROR] Track: " << track_title << " not found in cache" << std::endl;
+        stats.errors++;
+    }
+    else{
+        int result = mixing_service.loadTrackToDeck(*track);
+        if(result != -1){
+            if(result == 0)
+                stats.deck_loads_a++;
+            else
+                stats.deck_loads_b++;
+
+            stats.transitions++;
+            return true;
+        }
+        else{
+            std::cout << "[ERROR] Track: Failed loading track '" << track_title << "' to mixer deck " << std::endl;
+            stats.errors++;
+        }
+    }
     return false; // Placeholder
 }
 
@@ -117,7 +155,30 @@ void DJSession::simulate_dj_performance() {
     std::cout << "\n--- Processing Tracks ---" << std::endl;
 
     std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
+
     // Your implementation here
+    std::string playlist_name;
+    if(play_all){
+        std::map<std::string, std::vector<int>>::iterator it;
+        for(it = session_config.playlists.begin(); it != session_config.playlists.end(); ++it){
+            if(load_playlist(it->first)){
+
+                std::cerr << "\n–- Processing: " << it->first << std::endl;
+
+            }
+            else{
+
+                std::cerr << "[ERROR] Failed to load playlist " << it->first << std::endl;
+
+            }
+        }
+        
+    }
+    else{
+        playlist_name = display_playlist_menu_from_config();
+        // if(playlist == "")
+        //     break
+    }
 }
 
 
