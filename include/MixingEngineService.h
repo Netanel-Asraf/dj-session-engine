@@ -60,6 +60,26 @@ public:
         bpm_tolerance = tolerance;
     }
 
+    /* ---------------------------------------------------------
+     * ADDED RULE OF 3  
+     * --------------------------------------------------------- */
+
+    /**
+     * Copy Constructor
+     * Creates a deep copy of another MixingEngineService.
+     * @param other The MixingEngineService to copy from
+     */
+    MixingEngineService(const MixingEngineService& other);
+
+    /**
+     * Copy Assignment Operator
+     * Clears existing data and deep copies from other.
+     * @param other The MixingEngineService to assign from
+     */
+    MixingEngineService& operator=(const MixingEngineService& other);
+
+
+
 };
 
 #endif // MIXINGENGINESERVICE_H
