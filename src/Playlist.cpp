@@ -57,34 +57,50 @@ Playlist::Playlist(const Playlist& other)
         }
     }
 
-// Playlist& Playlist::operator=(const Playlist& other) {
-//     // TODO: Implement the copy assignment operator
-//     #ifdef DEBUG
-//     std::cout << "AudioTrack copy assignment called for: " << other.title << std::endl;
-//     #endif
-//     // Your code here...
-//     if(this != &other){
-//         if(this->waveform_data != nullptr) {
-//             delete[] this->waveform_data;
-//         }
-//         title = other.title;
-//         artists = other.artists;
-//         duration_seconds = other.duration_seconds;
-//         bpm = other.bpm;
-//         waveform_size = other.waveform_size;
+Playlist& Playlist::operator=(const Playlist& other) {
+    // TODO: Implement the copy assignment operator
+    #ifdef DEBUG
+    std::cout << "AudioTrack copy assignment called for: " << other.playlist_name << std::endl;
+    #endif
+    // 1. Check self-assignment
+    if (this == &other) return *this;
 
-//         if(other.waveform_data != nullptr){
-//             waveform_data = new double[waveform_size];
-//             for(size_t i = 0; i < other.waveform_size; i++){
-//                 waveform_data[i] = other.waveform_data[i];
-//             }
-//         }
-//         else{
-//             waveform_data = nullptr;
-//         }
-//     }
-//     return *this;
-// }
+    // 2. CLEAN UP existing data
+    PlaylistNode* cur = head;
+    while(cur) {
+        PlaylistNode* nxt = cur->next;
+        delete cur->track;
+        delete cur;
+        cur = nxt;   
+    }
+    head = nullptr;
+    track_count = 0;
+
+    // 3. COPY new data
+    playlist_name = other.playlist_name;
+    
+    PlaylistNode* otherCur = other.head;
+    PlaylistNode* myTail = nullptr;
+
+    while (otherCur != nullptr) {
+        AudioTrack* newTrack = otherCur->track->clone().release();
+
+        if (newTrack) {
+            PlaylistNode* newNode = new PlaylistNode(newTrack);
+            if (head == nullptr) {
+                head = newNode;
+                myTail = newNode;
+            } else {
+                myTail->next = newNode;
+                myTail = newNode;
+            }
+            track_count++;
+        }
+        otherCur = otherCur->next;
+    }
+
+    return *this;
+}
 
 void Playlist::add_track(AudioTrack* track) {
     if (!track) {
@@ -128,6 +144,8 @@ void Playlist::remove_track(const std::string& title) {
     } else {
         std::cout << "Track '" << title << "' not found in playlist" << std::endl;
     }
+    
+    //Delete the track and the node
     delete current->track;
     delete current;
 }
