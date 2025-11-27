@@ -22,6 +22,69 @@ Playlist::~Playlist() {
     head = nullptr;
 }
 
+Playlist::Playlist(const Playlist& other)
+    :   head(nullptr),
+        playlist_name(other.playlist_name),
+        track_count(other.track_count)
+    {
+        // TODO: Implement the copy constructor
+        #ifdef DEBUG
+        std::cout << "Playlist copy constructor called for: " << other.playlist_name << std::endl;
+        #endif
+        if (other.head != nullptr){
+            PlaylistNode* otherCur = other.head;
+            PlaylistNode* myTail = nullptr;
+            while (otherCur!=nullptr){
+                AudioTrack* newTrack = otherCur->track->clone().release();
+                if (newTrack) {
+                    // 2. Create new node
+                    PlaylistNode* newNode = new PlaylistNode(newTrack);
+                    // 3. Append to list
+                    if (head == nullptr) 
+                    {
+                        head = newNode;
+                        myTail = newNode;
+                    } 
+                    else 
+                    {
+                        myTail->next = newNode;
+                        myTail = newNode;
+                    }
+                    track_count++;
+                    }
+                otherCur = otherCur->next;
+                }
+        }
+    }
+
+// Playlist& Playlist::operator=(const Playlist& other) {
+//     // TODO: Implement the copy assignment operator
+//     #ifdef DEBUG
+//     std::cout << "AudioTrack copy assignment called for: " << other.title << std::endl;
+//     #endif
+//     // Your code here...
+//     if(this != &other){
+//         if(this->waveform_data != nullptr) {
+//             delete[] this->waveform_data;
+//         }
+//         title = other.title;
+//         artists = other.artists;
+//         duration_seconds = other.duration_seconds;
+//         bpm = other.bpm;
+//         waveform_size = other.waveform_size;
+
+//         if(other.waveform_data != nullptr){
+//             waveform_data = new double[waveform_size];
+//             for(size_t i = 0; i < other.waveform_size; i++){
+//                 waveform_data[i] = other.waveform_data[i];
+//             }
+//         }
+//         else{
+//             waveform_data = nullptr;
+//         }
+//     }
+//     return *this;
+// }
 
 void Playlist::add_track(AudioTrack* track) {
     if (!track) {

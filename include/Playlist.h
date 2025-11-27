@@ -86,6 +86,24 @@ public:
      */
     std::vector<AudioTrack*> getTracks() const;
 
+/* ---------------------------------------------------------
+     * ADDED RULE OF 3  
+     * --------------------------------------------------------- */
+
+    /**
+     * Copy Constructor
+     * Creates a deep copy of another playlist.
+     * @param other The playlist to copy from
+     */
+    Playlist(const Playlist& other);
+
+    /**
+     * Copy Assignment Operator
+     * Clears existing data and deep copies from other.
+     * @param other The playlist to assign from
+     */
+    Playlist& operator=(const Playlist& other);
+
 };
 
 
