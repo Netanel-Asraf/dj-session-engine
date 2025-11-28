@@ -9,7 +9,15 @@
 
 DJLibraryService::DJLibraryService(const Playlist& playlist) 
     : playlist(playlist), library() {}
-/**
+
+//Added destrcutor 
+DJLibraryService::~DJLibraryService() {
+    for(AudioTrack* track : library){
+        delete track;
+    }
+    library.clear();
+}
+    /**
  * @brief Load a playlist from track indices referencing the library
  * @param library_tracks Vector of track info from config
  */
@@ -27,7 +35,7 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
                 library_tracks[i].extra_param1, 
                 library_tracks[i].extra_param2 != 0);
             library.push_back(newTrack);
-            std::cout << "MP3Track created: " << library_tracks[i].extra_param1 << " kbps\n" << std::endl;
+            std::cout << "MP3Track created: " << library_tracks[i].extra_param1 << " kbps" << std::endl;
             count++;
         }
         else if(library_tracks[i].type == "WAV"){
@@ -39,11 +47,11 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
                 library_tracks[i].extra_param1, 
                 library_tracks[i].extra_param2);
             library.push_back(newTrack);
-            std::cout << "WAVTrack created: " << (library_tracks[i].extra_param1 / library_tracks[i].extra_param2) << " bit\n" << std::endl;
+            std::cout <<"WAVTrack created: " << library_tracks[i].extra_param1 << "Hz/" << library_tracks[i].extra_param2 << "bit" << std::endl;
             count++;
         }
     }
-    std::cout << "[INFO] Track library built: " << count << " tracks loaded\n" << std::endl;
+    std::cout << "[INFO] Track library built: " << count << " tracks loaded" << std::endl;
     //std::cout << "TODO: Implement DJLibraryService::buildLibrary method\n"<< library_tracks.size() << " tracks to be loaded into library.\n";
 }
 
@@ -89,29 +97,29 @@ AudioTrack* DJLibraryService::findTrack(const std::string& track_title) {
 void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name, 
                                                const std::vector<int>& track_indices) {
     // Your implementation here
-    std::cout << "Log: [INFO] Loading playlist: " << playlist_name << "\n" << std::endl;
+    std::cout << "[INFO] Loading playlist: " << playlist_name << std::endl;
     playlist = Playlist(playlist_name);
     int count = 0;
     int librarySize = library.size();
     for(int index: track_indices){
         if(index < 1 || index > librarySize){
-            std::cout << "[WARNING] Invalid track index: " << index << " tracks loaded\n" << std::endl;
+            std::cout << "[WARNING] Invalid track index: " << index << std::endl;
         }
         else{
             AudioTrack* clonedTrack = library[index-1]->clone().release();
             if(clonedTrack == nullptr){
-                std::cout << "[ERROR] Cloned track from index: " << index << " is nullptr\n" << std::endl;
+                std::cout << "[ERROR] Cloned track from index: " << index << " is nullptr" << std::endl;
             }
             else{
                 clonedTrack->load();
                 clonedTrack->analyze_beatgrid();
                 playlist.add_track(clonedTrack);
-                std::cout << "Added " << clonedTrack->get_title() << " to playlist "<< playlist.get_name() << "\n" << std::endl;
+                std::cout << "Added '" << clonedTrack->get_title() << "' to playlist '"<< playlist.get_name() << "'" << std::endl;
                 count++;
             }
         }
     }
-    std::cout << "[INFO] Playlist loaded: " << playlist.get_name() << " ("<< count << " tracks)\n" << std::endl;
+    std::cout << "[INFO] Playlist loaded: " << playlist.get_name() << " ("<< count << " tracks)" << std::endl;
 
     // For now, add a placeholder to fix the linker error
     // (void)playlist_name;  // Suppress unused parameter warning
