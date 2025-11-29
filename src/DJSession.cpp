@@ -157,33 +157,102 @@ void DJSession::simulate_dj_performance() {
     std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
 
     // Your implementation here
-    std::string playlist_name;
+    
     if(play_all){
 
         
         // auto playlists = session_config.playlists;
         // size_t = playlists.size();
 
-        for(const auto playlist : session_config.playlists){
+        for(const auto &playlist : session_config.playlists){
             if(load_playlist(playlist.first)){
                 for(std::string track_title : track_titles){
-                    std::cerr << "\n–- Processing: " << track_title << std::endl;
+                    std::cout << "\n–- Processing: " << track_title << std::endl;
+                    stats.tracks_processed++;
+
+                    // load track to controller
+                    // int result = 
+                    load_track_to_controller(track_title);
+                    // if(result == 1)
+                    //     stats.cache_hits++;
+                    // else{
+                    //     stats.cache_misses++;
+                    //     if(result == -1)
+                    //         stats.cache_evictions++;
+                    // }
+                    
+                    // load track to mixer
+                    // bool loaded = 
+                    load_track_to_mixer_deck(track_title);
+                    // if(loaded){stats.transitions++;}
                 }
-                
+
+                print_session_summary();
+
+                // reset stats
+                // stats.tracks_processed = 0;
+                // stats.cache_hits = 0;
+                // stats.cache_misses = 0;
+                // stats.cache_evictions = 0;
+                // stats.deck_loads_a = 0;
+                // stats.deck_loads_b = 0;
+                // stats.transitions = 0;
+                // stats.errors = 0;
 
             }
             else{
                 std::cerr << "[ERROR] Failed to load playlist " << playlist.first << std::endl;
-
+                stats.errors++;
             }
         }
         
     }
     else{
-        playlist_name = display_playlist_menu_from_config();
-        // if(playlist == "")
-        //     break
+        std::string playlist_name = display_playlist_menu_from_config();
+        while(playlist_name != ""){
+            if(load_playlist(playlist_name)){
+                for(std::string track_title : track_titles){
+                    std::cout << "\n–- Processing: " << track_title << std::endl;
+                    stats.tracks_processed++;
+
+                    // load track to controller
+                    // int result = 
+                    load_track_to_controller(track_title);
+                    // if(result == 1)
+                    //     stats.cache_hits++;
+                    // else{
+                    //     stats.cache_misses++;
+                    //     if(result == -1)
+                    //         stats.cache_evictions++;
+                    // }
+
+                    // load track to mixer
+                    // bool loaded = 
+                    load_track_to_mixer_deck(track_title);
+                    // if(loaded){stats.transitions++;}
+                }
+
+                print_session_summary();
+
+                // reset stats
+                // stats.tracks_processed = 0;
+                // stats.cache_hits = 0;
+                // stats.cache_misses = 0;
+                // stats.cache_evictions = 0;
+                // stats.deck_loads_a = 0;
+                // stats.deck_loads_b = 0;
+                // stats.transitions = 0;
+                // stats.errors = 0;
+
+            }
+            else{
+                std::cerr << "[ERROR] Failed to load playlist " << playlist_name << std::endl;
+                stats.errors++;
+            }
+        }
+
     }
+    std::cout << "Session cancelled by user or all playlists played." << std::endl;
 }
 
 
