@@ -35,7 +35,7 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
                 library_tracks[i].extra_param1, 
                 library_tracks[i].extra_param2 != 0);
             library.push_back(newTrack);
-            std::cout << "MP3Track created: " << library_tracks[i].extra_param1 << " kbps" << std::endl;
+            // std::cout << "MP3Track created: " << library_tracks[i].extra_param1 << " kbps" << std::endl;
             count++;
         }
         else if(library_tracks[i].type == "WAV"){
@@ -47,7 +47,7 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
                 library_tracks[i].extra_param1, 
                 library_tracks[i].extra_param2);
             library.push_back(newTrack);
-            std::cout <<"WAVTrack created: " << library_tracks[i].extra_param1 << "Hz/" << library_tracks[i].extra_param2 << "bit" << std::endl;
+            // std::cout <<"WAVTrack created: " << library_tracks[i].extra_param1 << "Hz/" << library_tracks[i].extra_param2 << "bit" << std::endl;
             count++;
         }
     }
@@ -114,7 +114,7 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
                 clonedTrack->load();
                 clonedTrack->analyze_beatgrid();
                 playlist.add_track(clonedTrack);
-                std::cout << "Added '" << clonedTrack->get_title() << "' to playlist '"<< playlist.get_name() << "'" << std::endl;
+                // std::cout << "Added '" << clonedTrack->get_title() << "' to playlist '"<< playlist.get_name() << "'" << std::endl;
                 count++;
             }
         }

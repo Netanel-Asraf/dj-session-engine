@@ -78,7 +78,7 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
         stats.errors++;
     }
     else{
-        std::cout << "[System] Loading track ’" << track_name << "’ to controller..." << std::endl;
+        std::cout << "[System] Loading track '" << track_name << "' to controller..." << std::endl;
         int result = controller_service.loadTrackToCache(*track);
         if(result == 1)
             stats.cache_hits++;
@@ -154,7 +154,6 @@ void DJSession::simulate_dj_performance() {
     std::cout << "Cache Capacity: " << session_config.controller_cache_size << " slots (LRU policy)" << std::endl;
     std::cout << "\n--- Processing Tracks ---" << std::endl;
 
-    std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
 
     // Your implementation here
     
@@ -167,7 +166,7 @@ void DJSession::simulate_dj_performance() {
         for(const auto &playlist : session_config.playlists){
             if(load_playlist(playlist.first)){
                 for(std::string track_title : track_titles){
-                    std::cout << "\n–- Processing: " << track_title << std::endl;
+                    std::cout << "\n--- Processing: " << track_title << " ---" << std::endl;
                     stats.tracks_processed++;
 
                     // load track to controller
@@ -243,12 +242,14 @@ void DJSession::simulate_dj_performance() {
                 // stats.deck_loads_b = 0;
                 // stats.transitions = 0;
                 // stats.errors = 0;
-
+                
             }
             else{
                 std::cerr << "[ERROR] Failed to load playlist " << playlist_name << std::endl;
                 stats.errors++;
             }
+            playlist_name = display_playlist_menu_from_config();
+            // std::cout << "\n–- PLAYLIST_NAME - " << playlist_name << std::endl;
         }
 
     }
