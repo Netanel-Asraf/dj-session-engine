@@ -89,6 +89,7 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
         }
 
         // Cache result code
+        controller_service.displayCacheStatus();
         return result;
     }
     return 0; // Placeholder

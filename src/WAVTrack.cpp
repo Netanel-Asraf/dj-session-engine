@@ -20,7 +20,7 @@ void WAVTrack::load() {
 }
 
 void WAVTrack::analyze_beatgrid() {
-    std::cout << "[WAVTrack::analyze_beatgrid] Analyzing beat grid for: \"" << title << "\"\n" << std::endl;
+    std::cout << "[WAVTrack::analyze_beatgrid] Analyzing beat grid for: \"" << title << "\"" << std::endl;
     // TODO: Implement WAV-specific beat detection analysis
     // Requirements:
     // 1. Print analysis message with track title
