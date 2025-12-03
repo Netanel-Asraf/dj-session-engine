@@ -1,0 +1,17 @@
+# Object files
+*.o
+
+# Executables and Binaries
+bin/
+dj_manager
+
+# Debug files (if you have them)
+*.dSYM/
+
+# IDE settings (optional, but good practice)
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
