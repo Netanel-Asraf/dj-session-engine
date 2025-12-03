@@ -3,6 +3,9 @@
 
 # Executables and Binaries
 bin/
+# ... BUT track this specific file!
+!bin/dj_config.txt
+
 dj_manager
 
 # Debug files (if you have them)
