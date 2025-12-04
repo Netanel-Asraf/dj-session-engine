@@ -102,6 +102,8 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
     int count = 0;
     int librarySize = library.size();
     for(int index: track_indices){
+    // for (size_t i = track_indices.size(); i > 0; --i) { 
+    //     int index = track_indices[i - 1];
         if(index < 1 || index > librarySize){
             std::cout << "[WARNING] Invalid track index: " << index << std::endl;
         }
@@ -114,7 +116,7 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
                 clonedTrack->load();
                 clonedTrack->analyze_beatgrid();
                 playlist.add_track(clonedTrack);
-                // std::cout << "Added '" << clonedTrack->get_title() << "' to playlist '"<< playlist.get_name() << "'" << std::endl;
+                //std::cout << "Added '" << clonedTrack->get_title() << "' to playlist '"<< playlist.get_name() << "'" << std::endl;
                 count++;
             }
         }
@@ -133,8 +135,11 @@ std::vector<std::string> DJLibraryService::getTrackTitles() const {
     // Your implementation here
     std::vector<std::string> titles;
     std::vector<AudioTrack*> tracks = playlist.getTracks();
-    for(AudioTrack* track: tracks){
-        titles.push_back(track->get_title());
+    for (size_t i = tracks.size(); i > 0; --i) {
+        AudioTrack* track = tracks[i - 1];
+        if (track) {
+            titles.push_back(track->get_title());
+        }
     }
     return titles;
 }

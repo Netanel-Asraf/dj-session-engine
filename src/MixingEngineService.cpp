@@ -30,12 +30,13 @@ MixingEngineService::MixingEngineService(const MixingEngineService& other)
         active_deck(other.active_deck),
         auto_sync(other.auto_sync),
         bpm_tolerance(other.bpm_tolerance)
-
-{
+    {
     //new decks?
     for (int i=0 ; i<=1 ; i++)
         if(other.decks[i] != nullptr)
             decks[i]=other.decks[i]->clone().release();
+        else
+            decks[i]=nullptr;
 }
 
 MixingEngineService& MixingEngineService::operator=(const MixingEngineService& other){
@@ -67,70 +68,118 @@ MixingEngineService& MixingEngineService::operator=(const MixingEngineService& o
  * @return: Index of the deck where track was loaded, or -1 on failure
  */
 int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
-
+std::cout << "\n=== Loading Track to Deck ===\n";
+    
     PointerWrapper<AudioTrack> tr;
+    try{
+        tr = track.clone();
+    }
+    catch(int errorCode){ 
+        std::cout << "[ERROR] Track: " << track.get_title() <<" failed to clone\n";
+        return -1;
+    }
+
     int target = 1 - active_deck;
+    std::cout << "[Deck Switch] Target deck: " << target << "\n";
 
-    // First track load
-    if(decks[0] == nullptr && decks[1] == nullptr){
-        try{
-            tr = track.clone();
-        }
-        catch(int errorCode){ 
-            std::cout << "[ERROR] Track: " << track.get_title() <<" failed to clone\n";
-            return -1;
-        }
-        decks[target] = tr.release();
-        active_deck = target;
+    // Empty target deck if occupied
+    if(decks[target] != nullptr){
+        delete decks[target];
+        decks[target] = nullptr;
     }
 
-    // Subsequent track load
-    else{
-        std::cout << "\n=== Loading Track to Deck ===\n";
-        PointerWrapper<AudioTrack> tr;
-        try{
-            tr = track.clone();
+    // Track preparation
+    tr.get()->load();
+    tr.get()->analyze_beatgrid();
+
+    // BPM Management (Auto-Sync)
+    // Only sync if there is an active track to sync WITH
+    if(decks[active_deck] != nullptr && auto_sync) {
+        if(can_mix_tracks(tr)) {
+            sync_bpm(tr);
         }
-        catch(int errorCode){ 
-            std::cout << "[ERROR] Track: " << track.get_title() <<" failed to clone\n";
-            return -1;
-        }
-
-        std::cout << "[Deck Switch] Target deck: " << target << "\n";
-
-        // Empty active deck
-        if(decks[target] != nullptr){
-            delete decks[target];
-            decks[target] = nullptr;
-        }
-
-        // Track preperation
-        tr.get()->load();
-        tr.get()->analyze_beatgrid();
-
-        // BPM Management
-        if(decks[active_deck] != nullptr && auto_sync)
-            if(can_mix_tracks(tr))
-                sync_bpm(tr);
-
-        // Release target deck
-        if(decks[target] != nullptr)
-            delete decks[target];
-        decks[target] = tr.release();
-        std::cout << "[Load Complete] ’" << decks[target] -> get_title() << "’ is now loaded on deck " << target << "\n";
-
-        // Instant unload
-        if(decks[active_deck] != nullptr){
-            std::cout << "[Unload] Unloading previous deck <" << active_deck << "> (<" << decks[active_deck]->get_title() << ">)\n";
-            delete decks[active_deck];
-            decks[active_deck] = nullptr;
-        }
-
-        active_deck = target;
-        std::cout << "[Active Deck] Switched to deck " << target << "\n";
     }
+
+    // Release to target deck
+    decks[target] = tr.release();
+    
+    std::cout << "[Load Complete] '" << decks[target]->get_title() << "' is now loaded on deck " << target << "\n";
+
+    // Instant unload of previous deck
+    // if(decks[active_deck] != nullptr){
+    //     // FIXED: Format to match [Unload] Unloading previous deck 0 (Title)
+    //     //std::cout << "[Unload] Unloading previous deck " << active_deck << " (" << decks[active_deck]->get_title() << ")\n";
+    //     //delete decks[active_deck];
+    //     //decks[active_deck] = nullptr;
+    // }
+
+    active_deck = target;
+    std::cout << "[Active Deck] Switched to deck " << target << "\n";
+
     displayDeckStatus();
     return target;
+
+    
+    // // First track load
+    // if(decks[0] == nullptr && decks[1] == nullptr){
+    //     try{
+    //         tr = track.clone();
+    //     }
+    //     catch(int errorCode){ 
+    //         std::cout << "[ERROR] Track: " << track.get_title() <<" failed to clone\n";
+    //         return -1;
+    //     }
+    //     decks[target] = tr.release();
+    //     active_deck = target;
+    // }
+
+    // // Subsequent track load
+    // else{
+    //     std::cout << "\n=== Loading Track to Deck ===\n";
+    //     PointerWrapper<AudioTrack> tr;
+    //     try{
+    //         tr = track.clone();
+    //     }
+    //     catch(int errorCode){ 
+    //         std::cout << "[ERROR] Track: " << track.get_title() <<" failed to clone\n";
+    //         return -1;
+    //     }
+
+    //     std::cout << "[Deck Switch] Target deck: " << target << "\n";
+
+    //     // Empty active deck
+    //     if(decks[target] != nullptr){
+    //         delete decks[target];
+    //         decks[target] = nullptr;
+    //     }
+
+    //     // Track preperation
+    //     tr.get()->load();
+    //     tr.get()->analyze_beatgrid();
+
+    //     // BPM Management
+    //     if(decks[active_deck] != nullptr && auto_sync)
+    //         if(can_mix_tracks(tr))
+    //             sync_bpm(tr);
+
+    //     // Release target deck
+    //     if(decks[target] != nullptr)
+    //         delete decks[target];
+    //     decks[target] = tr.release();
+    //     std::cout << "[Load Complete] ’" << decks[target] -> get_title() << "’ is now loaded on deck " << target << "\n";
+
+    //     // Instant unload
+    //     if(decks[active_deck] != nullptr){
+    //         std::cout << "[Unload] Unloading previous deck <" << active_deck << "> (<" << decks[active_deck]->get_title() << ">)\n";
+    //         delete decks[active_deck];
+    //         decks[active_deck] = nullptr;
+    //     }
+
+    //     active_deck = target;
+    //     std::cout << "[Active Deck] Switched to deck " << target << "\n";
+    // }
+    // displayDeckStatus();
+    // return target;
 }
 
 /**
