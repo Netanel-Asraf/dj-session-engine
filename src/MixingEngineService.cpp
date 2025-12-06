@@ -68,7 +68,7 @@ MixingEngineService& MixingEngineService::operator=(const MixingEngineService& o
  * @return: Index of the deck where track was loaded, or -1 on failure
  */
 int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
-std::cout << "\n=== Loading Track to Deck ===\n";
+    std::cout << "\n=== Loading Track to Deck ===\n";
     
     PointerWrapper<AudioTrack> tr;
     try{
@@ -92,8 +92,7 @@ std::cout << "\n=== Loading Track to Deck ===\n";
     tr.get()->load();
     tr.get()->analyze_beatgrid();
 
-    // BPM Management (Auto-Sync)
-    // Only sync if there is an active track to sync WITH
+    // BPM Management
     if(decks[active_deck] != nullptr && auto_sync) {
         if(can_mix_tracks(tr)) {
             sync_bpm(tr);
@@ -105,9 +104,8 @@ std::cout << "\n=== Loading Track to Deck ===\n";
     
     std::cout << "[Load Complete] '" << decks[target]->get_title() << "' is now loaded on deck " << target << "\n";
 
-    // Instant unload of previous deck
+    // removed to match output
     // if(decks[active_deck] != nullptr){
-    //     // FIXED: Format to match [Unload] Unloading previous deck 0 (Title)
     //     //std::cout << "[Unload] Unloading previous deck " << active_deck << " (" << decks[active_deck]->get_title() << ")\n";
     //     //delete decks[active_deck];
     //     //decks[active_deck] = nullptr;
@@ -118,68 +116,6 @@ std::cout << "\n=== Loading Track to Deck ===\n";
 
     displayDeckStatus();
     return target;
-
-    
-    // // First track load
-    // if(decks[0] == nullptr && decks[1] == nullptr){
-    //     try{
-    //         tr = track.clone();
-    //     }
-    //     catch(int errorCode){ 
-    //         std::cout << "[ERROR] Track: " << track.get_title() <<" failed to clone\n";
-    //         return -1;
-    //     }
-    //     decks[target] = tr.release();
-    //     active_deck = target;
-    // }
-
-    // // Subsequent track load
-    // else{
-    //     std::cout << "\n=== Loading Track to Deck ===\n";
-    //     PointerWrapper<AudioTrack> tr;
-    //     try{
-    //         tr = track.clone();
-    //     }
-    //     catch(int errorCode){ 
-    //         std::cout << "[ERROR] Track: " << track.get_title() <<" failed to clone\n";
-    //         return -1;
-    //     }
-
-    //     std::cout << "[Deck Switch] Target deck: " << target << "\n";
-
-    //     // Empty active deck
-    //     if(decks[target] != nullptr){
-    //         delete decks[target];
-    //         decks[target] = nullptr;
-    //     }
-
-    //     // Track preperation
-    //     tr.get()->load();
-    //     tr.get()->analyze_beatgrid();
-
-    //     // BPM Management
-    //     if(decks[active_deck] != nullptr && auto_sync)
-    //         if(can_mix_tracks(tr))
-    //             sync_bpm(tr);
-
-    //     // Release target deck
-    //     if(decks[target] != nullptr)
-    //         delete decks[target];
-    //     decks[target] = tr.release();
-    //     std::cout << "[Load Complete] ’" << decks[target] -> get_title() << "’ is now loaded on deck " << target << "\n";
-
-    //     // Instant unload
-    //     if(decks[active_deck] != nullptr){
-    //         std::cout << "[Unload] Unloading previous deck <" << active_deck << "> (<" << decks[active_deck]->get_title() << ">)\n";
-    //         delete decks[active_deck];
-    //         decks[active_deck] = nullptr;
-    //     }
-
-    //     active_deck = target;
-    //     std::cout << "[Active Deck] Switched to deck " << target << "\n";
-    // }
-    // displayDeckStatus();
-    // return target;
 }
 
 /**
@@ -209,6 +145,8 @@ bool MixingEngineService::can_mix_tracks(const PointerWrapper<AudioTrack>& track
     if(decks[active_deck] != nullptr && track.get() != nullptr){
         int current_bpm = decks[active_deck]->get_bpm();
         int new_bpm = track->get_bpm();
+        
+        //to get what lotem get's in the output flip <= to >, which is against the requirments
         if(std::abs(current_bpm - new_bpm) <= bpm_tolerance)
             return true;
     }
