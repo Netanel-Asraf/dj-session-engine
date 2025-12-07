@@ -94,7 +94,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
 
     // BPM Management
     if(decks[active_deck] != nullptr && auto_sync) {
-        if(can_mix_tracks(tr)) {
+        if(!can_mix_tracks(tr)) {
             sync_bpm(tr);
         }
     }
