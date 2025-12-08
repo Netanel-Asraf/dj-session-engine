@@ -114,7 +114,7 @@ public:
         if(ptr == nullptr){
             throw std::runtime_error("pointer is null");
         }   
-        return ptr; // Placeholder
+        return ptr; 
     }
 
     // ========== OWNERSHIP MANAGEMENT ==========
@@ -149,7 +149,7 @@ public:
      */
     explicit operator bool() const {
         if (ptr == nullptr ){
-            return false; //placeholder
+            return false; 
         }
         return true;
     }

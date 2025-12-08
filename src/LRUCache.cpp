@@ -34,7 +34,7 @@ bool LRUCache::put(PointerWrapper<AudioTrack> track) {
     }
     access_counter++;
     slots[findEmptySlot()].store(std::move(track), access_counter);
-    return false; // Placeholder
+    return false; 
 }
 
 bool LRUCache::evictLRU() {
@@ -86,7 +86,7 @@ size_t LRUCache::findLRUSlot() const {
             min_lru_indx = i;
         }
     }
-    return min_lru_indx; // Placeholder
+    return min_lru_indx; 
 }
 
 size_t LRUCache::findEmptySlot() const {

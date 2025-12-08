@@ -35,7 +35,6 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
                 library_tracks[i].extra_param1, 
                 library_tracks[i].extra_param2 != 0);
             library.push_back(newTrack);
-            // std::cout << "MP3Track created: " << library_tracks[i].extra_param1 << " kbps" << std::endl;
             count++;
         }
         else if(library_tracks[i].type == "WAV"){
@@ -47,12 +46,10 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
                 library_tracks[i].extra_param1, 
                 library_tracks[i].extra_param2);
             library.push_back(newTrack);
-            // std::cout <<"WAVTrack created: " << library_tracks[i].extra_param1 << "Hz/" << library_tracks[i].extra_param2 << "bit" << std::endl;
             count++;
         }
     }
     std::cout << "[INFO] Track library built: " << count << " tracks loaded" << std::endl;
-    //std::cout << "TODO: Implement DJLibraryService::buildLibrary method\n"<< library_tracks.size() << " tracks to be loaded into library.\n";
 }
 
 /**
@@ -102,8 +99,6 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
     int count = 0;
     int librarySize = library.size();
     for(int index: track_indices){
-    // for (size_t i = track_indices.size(); i > 0; --i) { 
-    //     int index = track_indices[i - 1];
         if(index < 1 || index > librarySize){
             std::cout << "[WARNING] Invalid track index: " << index << std::endl;
         }
@@ -116,16 +111,11 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
                 clonedTrack->load();
                 clonedTrack->analyze_beatgrid();
                 playlist.add_track(clonedTrack);
-                //std::cout << "Added '" << clonedTrack->get_title() << "' to playlist '"<< playlist.get_name() << "'" << std::endl;
                 count++;
             }
         }
     }
     std::cout << "[INFO] Playlist loaded: " << playlist.get_name() << " ("<< count << " tracks)" << std::endl;
-
-    // For now, add a placeholder to fix the linker error
-    // (void)playlist_name;  // Suppress unused parameter warning
-    // (void)track_indices;  // Suppress unused parameter warning
 }
 /**
  * TODO: Implement getTrackTitles method

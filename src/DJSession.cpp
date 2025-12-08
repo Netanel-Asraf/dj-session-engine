@@ -88,11 +88,10 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
                 stats.cache_evictions++;
         }
 
-        // Cache result code
         controller_service.displayCacheStatus();
         return result;
     }
-    return 0; // Placeholder
+    return 0; 
 }
 
 /**
@@ -124,7 +123,7 @@ bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
             stats.errors++;
         }
     }
-    return false; // Placeholder
+    return false; 
 }
 
 /**
@@ -159,46 +158,16 @@ void DJSession::simulate_dj_performance() {
     // Your implementation here
     
     if(play_all){
-
-        
-        // auto playlists = session_config.playlists;
-        // size_t = playlists.size();
-
         for(const auto &playlist : session_config.playlists){
             if(load_playlist(playlist.first)){
                 for(std::string track_title : track_titles){
                     std::cout << "\n--- Processing: " << track_title << " ---" << std::endl;
                     stats.tracks_processed++;
-
-                    // load track to controller
-                    // int result = 
                     load_track_to_controller(track_title);
-                    // if(result == 1)
-                    //     stats.cache_hits++;
-                    // else{
-                    //     stats.cache_misses++;
-                    //     if(result == -1)
-                    //         stats.cache_evictions++;
-                    // }
-                    
-                    // load track to mixer
-                    // bool loaded = 
                     load_track_to_mixer_deck(track_title);
-                    // if(loaded){stats.transitions++;}
                 }
 
                 print_session_summary();
-
-                // reset stats
-                // stats.tracks_processed = 0;
-                // stats.cache_hits = 0;
-                // stats.cache_misses = 0;
-                // stats.cache_evictions = 0;
-                // stats.deck_loads_a = 0;
-                // stats.deck_loads_b = 0;
-                // stats.transitions = 0;
-                // stats.errors = 0;
-
             }
             else{
                 std::cerr << "[ERROR] Failed to load playlist " << playlist.first << std::endl;
@@ -214,43 +183,17 @@ void DJSession::simulate_dj_performance() {
                 for(std::string track_title : track_titles){
                     std::cout << "\n–- Processing: " << track_title << std::endl;
                     stats.tracks_processed++;
-
-                    // load track to controller
-                    // int result = 
                     load_track_to_controller(track_title);
-                    // if(result == 1)
-                    //     stats.cache_hits++;
-                    // else{
-                    //     stats.cache_misses++;
-                    //     if(result == -1)
-                    //         stats.cache_evictions++;
-                    // }
-
-                    // load track to mixer
-                    // bool loaded = 
                     load_track_to_mixer_deck(track_title);
-                    // if(loaded){stats.transitions++;}
                 }
 
                 print_session_summary();
-
-                // reset stats
-                // stats.tracks_processed = 0;
-                // stats.cache_hits = 0;
-                // stats.cache_misses = 0;
-                // stats.cache_evictions = 0;
-                // stats.deck_loads_a = 0;
-                // stats.deck_loads_b = 0;
-                // stats.transitions = 0;
-                // stats.errors = 0;
-                
             }
             else{
                 std::cerr << "[ERROR] Failed to load playlist " << playlist_name << std::endl;
                 stats.errors++;
             }
             playlist_name = display_playlist_menu_from_config();
-            // std::cout << "\n–- PLAYLIST_NAME - " << playlist_name << std::endl;
         }
 
     }

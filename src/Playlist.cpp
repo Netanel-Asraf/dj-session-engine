@@ -37,9 +37,7 @@ Playlist::Playlist(const Playlist& other)
             while (otherCur!=nullptr){
                 AudioTrack* newTrack = otherCur->track->clone().release();
                 if (newTrack) {
-                    // 2. Create new node
                     PlaylistNode* newNode = new PlaylistNode(newTrack);
-                    // 3. Append to list
                     if (head == nullptr) 
                     {
                         head = newNode;
@@ -58,14 +56,11 @@ Playlist::Playlist(const Playlist& other)
     }
 
 Playlist& Playlist::operator=(const Playlist& other) {
-    // TODO: Implement the copy assignment operator
     #ifdef DEBUG
-    std::cout << "AudioTrack copy assignment called for: " << other.playlist_name << std::endl;
+    std::cout << "Playlist copy assignment called for: " << other.playlist_name << std::endl;
     #endif
-    // 1. Check self-assignment
     if (this == &other) return *this;
 
-    // 2. CLEAN UP existing data
     PlaylistNode* cur = head;
     while(cur) {
         PlaylistNode* nxt = cur->next;
@@ -76,7 +71,6 @@ Playlist& Playlist::operator=(const Playlist& other) {
     head = nullptr;
     track_count = 0;
 
-    // 3. COPY new data
     playlist_name = other.playlist_name;
     
     PlaylistNode* otherCur = other.head;

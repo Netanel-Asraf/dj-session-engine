@@ -31,7 +31,6 @@ MixingEngineService::MixingEngineService(const MixingEngineService& other)
         auto_sync(other.auto_sync),
         bpm_tolerance(other.bpm_tolerance)
     {
-    //new decks?
     for (int i=0 ; i<=1 ; i++)
         if(other.decks[i] != nullptr)
             decks[i]=other.decks[i]->clone().release();
@@ -104,13 +103,6 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     
     std::cout << "[Load Complete] '" << decks[target]->get_title() << "' is now loaded on deck " << target << "\n";
 
-    // removed to match output
-    // if(decks[active_deck] != nullptr){
-    //     //std::cout << "[Unload] Unloading previous deck " << active_deck << " (" << decks[active_deck]->get_title() << ")\n";
-    //     //delete decks[active_deck];
-    //     //decks[active_deck] = nullptr;
-    // }
-
     active_deck = target;
     std::cout << "[Active Deck] Switched to deck " << target << "\n";
 
@@ -146,11 +138,10 @@ bool MixingEngineService::can_mix_tracks(const PointerWrapper<AudioTrack>& track
         int current_bpm = decks[active_deck]->get_bpm();
         int new_bpm = track->get_bpm();
         
-        //to get what lotem get's in the output flip <= to >, which is against the requirments
         if(std::abs(current_bpm - new_bpm) <= bpm_tolerance)
             return true;
     }
-    return false; // Placeholder
+    return false; 
 }
 
 /**
